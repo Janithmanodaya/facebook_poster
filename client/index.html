@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Vehicle Ad Client — Ganudenu.store</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    :root {
+      --bg: #0f1115;
+      --card: #151922;
+      --accent: #3b82f6;
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --success: #22c55e;
+      --danger: #ef4444;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      background: linear-gradient(180deg, #0b0d12 0%, #0f1115 100%);
+      color: var(--text);
+    }
+    header {
+      position: sticky;
+      top: 0;
+      background: rgba(15,17,21,0.85);
+      backdrop-filter: blur(6px);
+      border-bottom: 1px solid #1f2430;
+      padding: 16px 24px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+    .container { max-width: 980px; margin: 0 auto; padding: 24px; }
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    @media (max-width: 900px) {
+      .grid { grid-template-columns: 1fr; }
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid #1f2430;
+      border-radius: 14px;
+      padding: 18px;
+      box-shadow: 0 12px 24px rgba(0,0,0,0.2);
+    }
+    .card h2 {
+      margin: 0 0 12px 0;
+      font-size: 20px;
+      color: var(--text);
+    }
+    .field {
+      margin-bottom: 12px;
+    }
+    .field label {
+      display: block;
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    .field input, .field select {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid #283041;
+      background: #0f1218;
+      color: var(--text);
+      outline: none;
+    }
+    .field input[type="file"] {
+      padding: 8px;
+      background: transparent;
+      border: 1px dashed #3b4460;
+    }
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    @media (max-width: 700px) {
+      .row { grid-template-columns: 1fr; }
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--accent);
+      color: white;
+      padding: 10px 14px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+    .muted { color: var(--muted); font-size: 12px; }
+    .result {
+      display: none;
+      margin-top: 10px;
+    }
+    .images-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+    .images-grid img {
+      width: 100%;
+      height: 150px;
+      object-fit: cover;
+      border-radius: 10px;
+      border: 1px solid #243044;
+    }
+    .collage {
+      margin-top: 10px;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid #243044;
+    }
+    .links a {
+      display: inline-block;
+      margin-right: 10px;
+      margin-bottom: 10px;
+      text-decoration: none;
+      color: var(--accent);
+      border: 1px solid #243044;
+      padding: 6px 10px;
+      border-radius: 10px;
+      background: #0c111a;
+    }
+    .toast {
+      display: none;
+      margin-top: 10px;
+      padding: 10px;
+      border-radius: 10px;
+      background: #0c1a12;
+      border: 1px solid #1f3d2a;
+      color: #a7f3d0;
+    }
+    .error {
+      display: none;
+      margin-top: 10px;
+      padding: 10px;
+      border-radius: 10px;
+      background: #1a0c0c;
+      border: 1px solid #3d1f1f;
+      color: #fecaca;
+    }
+  </style>
+</head>
+<body>
+  <header>Vehicle Ad Client — Ganudenu.store</header>
+  <div class="container">
+    <div class="grid">
+      <div class="card">
+        <h2>Server Settings</h2>
+        <p class="muted">Point this client at your running server (default http://localhost:8080).</p>
+        <div class="field">
+          <label>Server URL</label>
+          <input type="url" id="serverUrl" placeholder="http://localhost:8080" value="http://localhost:8080">
+        </div>
+        <div class="field">
+          <label>API Key (optional)</label>
+          <input type="text" id="apiKey" placeholder="If your server requires x-api-key">
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Create Ad</h2>
+        <p class="muted">Fill in details and upload 3–9 images. We’ll generate a collage and multiple ad pages.</p>
+        <form id="adForm">
+          <div class="row">
+            <div class="field">
+              <label>Model</label>
+              <input type="text" name="model" required placeholder="e.g., Toyota Aqua">
+            </div>
+            <div class="field">
+              <label>Manufacture Year</label>
+              <input type="text" name="manufacture_year" required placeholder="e.g., 2015">
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="field">
+              <label>Price</label>
+              <input type="text" name="price" required placeholder="e.g., Rs. 7,250,000">
+            </div>
+            <div class="field">
+              <label>Location</label>
+              <input type="text" name="location" required placeholder="e.g., Colombo">
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="field">
+              <label>Price Type</label>
+              <select name="price_type" required>
+                <option value="Negotiable">Negotiable</option>
+                <option value="Fixed">Fixed</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Phone</label>
+              <input type="text" name="phone" required placeholder="+94xxxxxxxxx">
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Condition</label>
+            <input type="text" name="condition" required placeholder="e.g., Used - Excellent">
+          </div>
+
+          <div class="field">
+            <label>Images (3–9)</label>
+            <input type="file" name="images" id="images" multiple accept="image/*" required>
+          </div>
+
+          <button type="submit" class="btn" id="submitBtn">Generate</button>
+        </form>
+        <div class="toast" id="toast">Uploading and generating…</div>
+        <div class="error" id="errorBox"></div>
+      </div>
+
+      <div class="card">
+        <h2>Result</h2>
+        <div class="result" id="resultBox">
+          <div class="muted">Preview uploaded images</div>
+          <div class="images-grid" id="imagesPreview"></div>
+
+          <div class="muted" style="margin-top:10px;">Generated collage</div>
+          <div class="collage">
+            <img id="collageImg" alt="Collage" style="width:100%; display:block;">
+          </div>
+
+          <div class="links" id="linksBox" style="margin-top:10px;">
+            <a id="downloadCollage" href="#" download>Download Collage</a>
+          </div>
+
+          <div class="muted" style="margin-top:10px;">Generated ad pages</div>
+          <div class="links" id="pagesLinks"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const form = document.getElementById('adForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const toast = document.getElementById('toast');
+    const errorBox = document.getElementById('errorBox');
+    const resultBox = document.getElementById('resultBox');
+    const imagesPreview = document.getElementById('imagesPreview');
+    const collageImg = document.getElementById('collageImg');
+    const downloadCollage = document.getElementById('downloadCollage');
+    const pagesLinks = document.getElementById('pagesLinks');
+    const serverUrlInput = document.getElementById('serverUrl');
+    const apiKeyInput = document.getElementById('apiKey');
+
+    function showError(msg) {
+      errorBox.textContent = msg;
+      errorBox.style.display = 'block';
+      toast.style.display = 'none';
+    }
+    function clearError() {
+      errorBox.textContent = '';
+      errorBox.style.display = 'none';
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      clearError();
+      pagesLinks.innerHTML = '';
+      imagesPreview.innerHTML = '';
+      resultBox.style.display = 'none';
+
+      const files = document.getElementById('images').files;
+      if (!files || files.length < 3) {
+        showError('Please select at least 3 images.');
+        return;
+      }
+
+      const server = serverUrlInput.value.trim() || 'http://localhost:8080';
+      const apiKey = apiKeyInput.value.trim();
+      const endpoint = server.replace(/\/+$/, '') + '/api/ads';
+
+      const fd = new FormData(form);
+      // Append files explicitly to match backend "images" list
+      for (const file of files) {
+        fd.append('images', file);
+      }
+
+      toast.style.display = 'block';
+      submitBtn.disabled = true;
+
+      try {
+        const headers = {};
+        if (apiKey) headers['x-api-key'] = apiKey;
+
+        const resp = await fetch(endpoint, {
+          method: 'POST',
+          body: fd,
+          headers
+        });
+        if (!resp.ok) {
+          const txt = await resp.text();
+          throw new Error(txt || ('HTTP ' + resp.status));
+        }
+        const data = await resp.json();
+
+        // Preview uploaded images (served back as URLs)
+        (data.image_urls || []).forEach(url => {
+          const img = document.createElement('img');
+          // If serverUrl differs (CORS), ensure absolute URLs
+          const absolute = url.startsWith('http') ? url : (server.replace(/\/+$/, '') + url);
+          img.src = absolute;
+          imagesPreview.appendChild(img);
+        });
+
+        // Show collage and download link
+        {
+          const url = (data.collage_download_url || data.collage_url || '');
+          const absolute = url.startsWith('http') ? url : (server.replace(/\/+$/, '') + url);
+          collageImg.src = absolute;
+          downloadCollage.href = absolute;
+          downloadCollage.setAttribute('download', (data.ad_id || 'collage') + '.jpg');
+        }
+
+        // Show generated pages
+        (data.pages || []).forEach(url => {
+          const absolute = url.startsWith('http') ? url : (server.replace(/\/+$/, '') + url);
+          const a = document.createElement('a');
+          a.href = absolute;
+          a.target = '_blank';
+          a.textContent = url.split('/').pop();
+          pagesLinks.appendChild(a);
+        });
+
+        resultBox.style.display = 'block';
+        toast.style.display = 'none';
+      } catch (err) {
+        showError(err.message || 'Failed to generate ad');
+      } finally {
+        submitBtn.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>
