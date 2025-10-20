@@ -2,7 +2,7 @@ import os
 import uuid
 from typing import List, Optional
 
-from fastapi import FastAPI, File, Form, UploadFile, HTTPException, Depends
+from fastapi import FastAPI, File, Form, UploadFile, HTTPException, Depends, Header
 from fastapi.responses import JSONResponse, HTMLResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
@@ -45,10 +45,12 @@ env = Environment(
 app.mount("/generated", StaticFiles(directory=GENERATED_DIR), name="generated")
 
 # Optional API key protection via header
-API_KEY = os.getenv("API_KEY", "").strip()
+# If you want a fixed API key regardless of environment, set it here.
+# NOTE: This overrides the environment variable.
+FIXED_API_KEY = "a3b7f219-47c9-4e01-b9d3-6b72d1b4e8c2"
+API_KEY = (FIXED_API_KEY or os.getenv("API_KEY", "").strip())
 
-
-def verify_api_key(x_api_key: Optional[str] = None):
+def verify_api_key(x_api_key: Optional[str] = Header(None)):
     # If API_KEY is configured, require header match
     if API_KEY and (x_api_key or "") != API_KEY:
         raise HTTPException(status_code=401, detail="Unauthorized: invalid API key")
