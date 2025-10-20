@@ -2,6 +2,11 @@ import argparse
 import os
 import sys
 from typing import List
+import http.server
+import threading
+import webbrowser
+import socket
+import functools
 
 import requests
 
@@ -49,31 +54,41 @@ def send_ad(
     print(resp.json())
 
 
+def _find_free_port() -> int:
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.bind(("127.0.0.1", 0))
+        return s.getsockname()[1]
+
+
+def run_ui():
+    # Serve the client directory and open index.html in the default browser
+    client_dir = os.path.dirname(os.path.abspath(__file__))
+    port = _find_free_port()
+
+    handler = functools.partial(http.server.SimpleHTTPRequestHandler, directory=client_dir)
+    server = http.server.ThreadingHTTPServer(("127.0.0.1", port), handler)
+
+    thread = threading.Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+
+    url = f"http://127.0.0.1:{port}/index.html"
+    print(f"Opening UI at {url}")
+    webbrowser.open(url)
+
+    try:
+        # Keep the main thread alive to serve until user stops with Ctrl+C
+        print("Press Ctrl+C to stop the UI server.")
+        while True:
+            thread.join(1)
+    except KeyboardInterrupt:
+        print("\nShutting down UI server...")
+        server.shutdown()
+        server.server_close()
+
+
 def main():
-    parser = argparse.ArgumentParser(description="Upload vehicle ad details and images to Ganudenu.store API server.")
-    parser.add_argument("--model", required=True)
-    parser.add_argument("--manufacture_year", required=True)
-    parser.add_argument("--price", required=True)
-    parser.add_argument("--location", required=True)
-    parser.add_argument("--price_type", required=True, choices=["Negotiable", "Fixed"])
-    parser.add_argument("--phone", required=True)
-    parser.add_argument("--condition", required=True)
-    parser.add_argument("--images", nargs="+", required=True, help="Paths to 3-9 image files")
-
-    args = parser.parse_args()
-    if len(args.images) < 3:
-        parser.error("Please provide at least 3 images")
-
-    send_ad(
-        model=args.model,
-        manufacture_year=args.manufacture_year,
-        price=args.price,
-        location=args.location,
-        price_type=args.price_type,
-        phone=args.phone,
-        condition=args.condition,
-        image_paths=args.images,
-    )
+    # Launch the local UI instead of using CLI arguments
+    run_ui()
 
 
 if __name__ == "__main__":
