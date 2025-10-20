@@ -5,7 +5,11 @@ from typing import List
 
 import requests
 
-from client.config import SERVER_URL, API_KEY
+# Support running both as a package (python -m client.send_ad) and as a script from the client/ directory
+try:
+    from client.config import SERVER_URL, API_KEY  # when executed from project root
+except ModuleNotFoundError:
+    from config import SERVER_URL, API_KEY  # when executed directly inside the client/ folder
 
 
 def send_ad(
