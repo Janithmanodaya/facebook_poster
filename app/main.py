@@ -3,7 +3,7 @@ import uuid
 from typing import List, Optional
 
 from fastapi import FastAPI, File, Form, UploadFile, HTTPException, Depends
-from fastapi.responses import JSONResponse, HTMLResponse
+from fastapi.responses import JSONResponse, HTMLResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from jinja2 import Environment, FileSystemLoader, select_autoescape
@@ -28,10 +28,12 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 TEMPLATES_DIR = os.path.join(BASE_DIR, "templates")
 UPLOADS_DIR = os.path.join(BASE_DIR, "..", "uploads")
 GENERATED_DIR = os.path.join(BASE_DIR, "..", "generated")
+COLLAGES_DIR = os.path.join(GENERATED_DIR, "collages")
 
 # Ensure directories exist
 os.makedirs(UPLOADS_DIR, exist_ok=True)
 os.makedirs(GENERATED_DIR, exist_ok=True)
+os.makedirs(COLLAGES_DIR, exist_ok=True)
 
 # Jinja environment
 env = Environment(
@@ -60,6 +62,17 @@ def root():
     return template.render(site_name="Ganudenu.store")
 
 
+@app.get("/api/collage/{filename}")
+def get_collage(filename: str):
+    """
+    Download endpoint for generated collage image by filename.
+    """
+    path = os.path.join(COLLAGES_DIR, filename)
+    if not os.path.isfile(path):
+        raise HTTPException(status_code=404, detail="Collage not found")
+    return FileResponse(path, media_type="image/jpeg", filename=filename)
+
+
 @app.post("/api/ads")
 async def create_ad(
     verify: bool = Depends(verify_api_key),
@@ -85,10 +98,8 @@ async def create_ad(
     ad_id = str(uuid.uuid4())
     ad_upload_dir = os.path.join(UPLOADS_DIR, ad_id)
     ad_generated_dir = os.path.join(GENERATED_DIR, "ads", ad_id)
-    collage_dir = os.path.join(GENERATED_DIR, "collages")
     os.makedirs(ad_upload_dir, exist_ok=True)
     os.makedirs(ad_generated_dir, exist_ok=True)
-    os.makedirs(collage_dir, exist_ok=True)
 
     # Save images
     saved_image_paths = []
@@ -104,7 +115,8 @@ async def create_ad(
         saved_image_paths.append(target_path)
 
     # Generate collage (1080x1080 3x3)
-    collage_path = os.path.join(collage_dir, f"{ad_id}.jpg")
+    collage_filename = f"{ad_id}.jpg"
+    collage_path = os.path.join(COLLAGES_DIR, collage_filename)
     make_3x3_collage(saved_image_paths, collage_path, size=(1080, 1080))
 
     # Prepare context
@@ -136,7 +148,8 @@ async def create_ad(
         served_images.append(f"/generated/ads/{ad_id}/{filename}")
 
     context["images"] = served_images
-    collage_url = f"/generated/collages/{os.path.basename(collage_path)}"
+    collage_url = f"/generated/collages/{collage_filename}"
+    collage_download_url = f"/api/collage/{collage_filename}"
 
     # Render and save 10 templates
     template_files = [
@@ -165,6 +178,7 @@ async def create_ad(
         {
             "ad_id": ad_id,
             "collage_url": collage_url,
+            "collage_download_url": collage_download_url,
             "pages": generated_pages,
             "image_urls": served_images,
         }

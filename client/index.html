@@ -320,7 +320,7 @@
 
         // Show collage and download link
         {
-          const url = data.collage_url || '';
+          const url = (data.collage_download_url || data.collage_url || '');
           const absolute = url.startsWith('http') ? url : (server.replace(/\/+$/, '') + url);
           collageImg.src = absolute;
           downloadCollage.href = absolute;
