@@ -1,4 +1,4 @@
-FROM ghcr.io/library/python:3.11-slim
+FROM mirror.gcr.io/library/python:3.11-slim
 
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
@@ -13,7 +13,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libpng16-16 \
     libwebp7 \
     libtiff6 \
-    libfreetype6 \
+    libpe6 \
  && rm -rf /var/lib/apt/lists/*
 
 # Copy and install Python deps
