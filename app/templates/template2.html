@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>{{ site_name }} - Vehicle Ad</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    :root { --primary:#0a6cff; --bg:#0f172a; --text:#e2e8f0; }
+    body { margin:0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background:var(--bg); color:var(--text); }
+    header { background: linear-gradient(90deg, var(--primary), #22c55e); padding:18px; text-align:center; font-weight:700; letter-spacing:1px; color:#fff; }
+    .content { max-width:1100px; margin: 0 auto; padding: 20px; }
+    .flex { display:flex; gap:16px; flex-wrap:wrap; }
+    .flex img { flex:1 1 calc(33% - 16px); width:calc(33% - 16px); height:240px; object-fit:cover; border-radius:12px; box-shadow:0 8px 24px rgba(0,0,0,.4); }
+    .card { margin-top:16px; background:#1e293b; border-radius:12px; padding:16px; box-shadow:0 8px 24px rgba(0,0,0,.3); }
+    .row { display:flex; gap:12px; flex-wrap:wrap; }
+    .tag { background:#334155; color:#cbd5e1; border-radius:999px; padding:8px 12px; font-size:13px; }
+    h2 { margin:0 0 8px 0; color:#fff; }
+  </style>
+</head>
+<body>
+  <header>{{ site_name }}</header>
+  <div class="content">
+    <div class="flex">
+      {% for img in images %}
+        <img src="{{ img }}" alt="Vehicle image {{ loop.index }}">
+      {% endfor %}
+    </div>
+    <div class="card">
+      <h2>{{ model }} ({{ manufacture_year }})</h2>
+      <div class="row">
+        <span class="tag">Price: {{ price }}</span>
+        <span class="tag">Type: {{ price_type }}</span>
+        <span class="tag">Condition: {{ condition }}</span>
+        <span class="tag">Location: {{ location }}</span>
+        <span class="tag">Phone: {{ phone }}</span>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>{{ site_name }} - Vehicle Ad</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body { margin:0; font-family: Georgia, 'Times New Roman', Times, serif; background:#ffffff; color:#1f2937; }
+    header { background:#f97316; color:#fff; padding:14px; text-align:center; font-weight:700; }
+    .container { max-width:1000px; margin:0 auto; padding:16px; }
+    .masonry { column-count: 3; column-gap: 10px; }
+    .masonry img { width:100%; margin-bottom:10px; border-radius:10px; }
+    .panel { margin-top:16px; border:2px solid #f97316; border-radius:10px; padding:14px; }
+    .row { display:flex; gap:10px; flex-wrap:wrap; }
+    .badge { border:1px dashed #f97316; padding:6px 10px; border-radius:999px; font-size:12px; }
+    h2 { margin:0 0 8px 0; }
+  </style>
+</head>
+<body>
+  <header>{{ site_name }}</header>
+  <div class="container">
+    <div class="masonry">
+      {% for img in images %}
+        <img src="{{ img }}" alt="Vehicle image {{ loop.index }}">
+      {% endfor %}
+    </div>
+    <div class="panel">
+      <h2>{{ model }} - {{ manufacture_year }}</h2>
+      <div class="row">
+        <span class="badge">Price: {{ price }}</span>
+        <span class="badge">Type: {{ price_type }}</span>
+        <span class="badge">Condition: {{ condition }}</span>
+        <span class="badge">Location: {{ location }}</span>
+        <span class="badge">Phone: {{ phone }}</span>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

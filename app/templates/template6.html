@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>{{ site_name }} - Vehicle Ad</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body { margin:0; font-family: 'Roboto', Arial, sans-serif; background:#fff; color:#0f172a; }
+    header { background:#2563eb; color:#fff; padding:20px; text-align:center; font-weight:800; }
+    .container { max-width:1100px; margin:0 auto; padding: 16px; }
+    .hero { display:grid; grid-template-columns: 2fr 1fr; gap:14px; }
+    .hero .left { display:grid; grid-template-columns: repeat(2, 1fr); gap:14px; }
+    .hero .left img { width:100%; height:220px; object-fit:cover; border-radius:12px; }
+    .hero .right img { width:100%; height:454px; object-fit:cover; border-radius:12px; }
+    .info { margin-top:18px; background:#f8fafc; border-radius:12px; padding:16px; border:1px solid #e2e8f0; }
+    .row { display:flex; gap:12px; flex-wrap:wrap; }
+    .tag { background:#e2e8f0; padding:8px 12px; border-radius:999px; }
+    h2 { margin:0 0 12px 0; }
+  </style>
+</head>
+<body>
+  <header>{{ site_name }}</header>
+  <div class="container">
+    <div class="hero">
+      <div class="left">
+        {% for img in images[:4] %}
+          <img src="{{ img }}" alt="Vehicle image {{ loop.index }}">
+        {% endfor %}
+      </div>
+      <div class="right">
+        {% if images|length > 4 %}
+          <img src="{{ images[4] }}" alt="Vehicle image 5">
+        {% else %}
+          <img src="{{ images[0] }}" alt="Vehicle image 1">
+        {% endif %}
+      </div>
+    </div>
+    <div class="info">
+      <h2>{{ model }} - {{ manufacture_year }}</h2>
+      <div class="row">
+        <span class="tag">Price: {{ price }}</span>
+        <span class="tag">Type: {{ price_type }}</span>
+        <span class="tag">Condition: {{ condition }}</span>
+        <span class="tag">Location: {{ location }}</span>
+        <span class="tag">Phone: {{ phone }}</span>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
