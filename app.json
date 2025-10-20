@@ -1,0 +1,24 @@
+{
+  "name": "Ganudenu.store Vehicle Ad API",
+  "description": "FastAPI service that generates 3x3 collage and renders 10 vehicle ad templates.",
+  "keywords": [
+    "fastapi",
+    "vehicle-ad",
+    "collage",
+    "jinja2"
+  ],
+  "website": "https://ganudenu.store",
+  "repository": "https://example.com/repo",
+  "scripts": {
+    "postdeploy": "echo 'Deployment complete'"
+  },
+  "env": {
+    "API_KEY": {
+      "description": "Optional API key required via x-api-key header. Leave empty to disable auth.",
+      "required": false
+    }
+  },
+  "buildpacks": [
+    { "url": "heroku/python" }
+  ]
+}
