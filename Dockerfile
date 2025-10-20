@@ -1,4 +1,4 @@
-FROM public.ecr.aws/docker/library/python:3.11-slim
+FROM ghcr.io/library/python:3.11-slim
 
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
@@ -15,6 +15,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libtiff6 \
     libfreetype6 \
  && rm -rf /var/lib/apt/lists/*
+
+/apt/lists/*
 
 # Copy and install Python deps
 COPY requirements.txt /app/requirements.txt
