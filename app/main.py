@@ -55,7 +55,9 @@ def verify_api_key(x_api_key: Optional[str] = None):
 
 @app.get("/", response_class=HTMLResponse)
 def root():
-    return "<h1>Ganudenu.store Vehicle Ad API</h1><p>POST /api/ads to generate ad pages and collage.</p>"
+    # Render client UI
+    template = env.get_template("ui.html")
+    return template.render(site_name="Ganudenu.store")
 
 
 @app.post("/api/ads")
